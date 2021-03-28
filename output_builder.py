@@ -1,5 +1,6 @@
 import pandas as pd
 import seaborn as sns
+from datetime import date
 import matplotlib.pyplot as plt
 from polls_extractor import CnnTracker, RcpTracker
 
@@ -15,6 +16,11 @@ if __name__ == '__main__':
 
     ## Average Poll Numbers by Date
     union_df = pd.concat([cnn_data, rcp_data])
+    #Save in a CSV file for now
+    today = str(date.today())
+    union_df.to_csv(f"Poll_Data-{today}.csv", index=False)
+
+    ## Renaming Columns
     grouped_df = union_df.groupby('DATE', as_index=False)['JOE BIDEN', 'DONALD TRUMP'].mean()
     renamed_df = grouped_df[['DATE', 'JOE BIDEN', 'DONALD TRUMP']]
 

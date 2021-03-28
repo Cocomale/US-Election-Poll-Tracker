@@ -30,9 +30,8 @@ class CnnTracker:
         browser = webdriver.Chrome(ChromeDriverManager().install())
         browser.get(url)
         try:
-            WebDriverWait(browser, 10).until(EC.presence_of_element_located(
+            WebDriverWait(browser, 100).until(EC.presence_of_element_located(
                 (By.XPATH, """//*[@id="__next"]/div[6]/div/div/div[2]/div[2]/div/div/table/tbody/tr[1]/td[2]""")))
-        except Exception as e:
             print("Timeout Exception")
 
         ## Soup objects
@@ -67,8 +66,11 @@ class CnnTracker:
                     dates.append(modified_date)
 
         ## Get the poll values
-        first_candidate_text = self.soup.find('div', {
-            'class': 'candidate-tablestyles__CandidateName-sc-8lqksg-2 iOiCzR'}).get_text()
+        first_candidate_text = ""
+        try:
+            first_candidate_text = self.soup.find('div', {'class': 'candidate-tablestyles__CandidateName-sc-8lqksg-2 iOiCzR'}).get_text()
+        except Exception as e:
+            print("Nothing here1")
         first_candidate = 'JOE BIDEN' if fuzz.token_sort_ratio(first_candidate_text, 'Biden') > fuzz.token_sort_ratio(
             first_candidate_text, 'Trump') else 'Donald Trump'
         second_candidate = "DONALD TRUMP" if first_candidate.find("JOE BIDEN") > -1 else "JOE BIDEN"
@@ -86,7 +88,11 @@ class CnnTracker:
             if (self.soup.find_all('', {'class': c})):
                 poll_soup = self.soup.find_all('', {'class': c})
                 for child in poll_soup:
-                    child_text = child.get_text()
+                    child_text = ""
+                    try:
+                        child_text = child.get_text()
+                    except Exception as e:
+                        print("Nothing here")
                     poll_values.append(float(child_text.strip().split('%')[0]))
 
         poll_values_c1 = poll_values[0:5]
